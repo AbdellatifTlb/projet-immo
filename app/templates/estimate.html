@@ -1,0 +1,196 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+  <p class="eyebrow">Estimation</p>
+  <h1>Évaluer votre bien</h1>
+</section>
+
+<div class="estimate-layout">
+  <form id="estimate-form" class="panel form-panel" novalidate aria-describedby="form-message">
+    <div class="field-group">
+      <label for="type_bien">Type de bien</label>
+      <select id="type_bien" name="type_bien" required>
+        <option value="Appartement">Appartement</option>
+        <option value="Maison">Maison</option>
+      </select>
+    </div>
+
+    <div class="two-columns">
+      <div class="field-group">
+        <label for="surface">Surface habitable (m²)</label>
+        <input id="surface" name="surface" type="number" min="1" step="0.1" placeholder="Ex. : 65" required>
+      </div>
+
+      <div class="field-group">
+        <label for="pieces">Nombre de pièces</label>
+        <input id="pieces" name="pieces" type="number" min="1" step="1" placeholder="Ex. : 3" required>
+      </div>
+    </div>
+
+    <div id="terrain-group" class="field-group hidden" aria-hidden="true">
+      <label for="terrain">Surface du terrain (m²)</label>
+      <input id="terrain" name="terrain" type="number" min="0" step="1" placeholder="Ex. : 300">
+    </div>
+
+    <div class="field-group">
+      <label for="departement">Département</label>
+      <select id="departement" name="departement" required>
+        <option value="75">Paris (75)</option>
+        <option value="92">Hauts-de-Seine (92)</option>
+        <option value="94">Val-de-Marne (94)</option>
+      </select>
+    </div>
+
+    <div id="form-message" class="message" role="alert" aria-live="assertive" hidden></div>
+
+    <button id="estimate-button" class="button primary full-width" type="submit">Estimer mon bien</button>
+  </form>
+
+  <aside class="panel result-panel" aria-live="polite">
+    <p class="eyebrow">Résultat</p>
+    <div id="result-placeholder" class="result-placeholder">
+      <p>Renseignez les informations du bien pour obtenir une estimation.</p>
+    </div>
+
+    <div id="result-card" class="result-card hidden" aria-live="polite">
+      <p class="result-label">Prix estimé</p>
+      <h2 id="result-price">—</h2>
+      <p id="result-m2" class="result-m2">—</p>
+
+      <dl class="result-meta">
+        <div>
+          <dt>Type</dt>
+          <dd id="result-type">—</dd>
+        </div>
+        <div>
+          <dt>Surface</dt>
+          <dd id="result-surface">—</dd>
+        </div>
+        <div>
+          <dt>Pièces</dt>
+          <dd id="result-pieces">—</dd>
+        </div>
+        <div>
+          <dt>Terrain</dt>
+          <dd id="result-terrain">—</dd>
+        </div>
+        <div>
+          <dt>Département</dt>
+          <dd id="result-departement">—</dd>
+        </div>
+      </dl>
+    </div>
+  </aside>
+</div>
+
+<script>
+  const form = document.getElementById('estimate-form');
+  const typeBien = document.getElementById('type_bien');
+  const terrainGroup = document.getElementById('terrain-group');
+  const terrainInput = document.getElementById('terrain');
+  const resultPlaceholder = document.getElementById('result-placeholder');
+  const resultCard = document.getElementById('result-card');
+  const formMessage = document.getElementById('form-message');
+  const submitButton = document.getElementById('estimate-button');
+
+  function setFormMessage(message, isError = false) {
+    formMessage.textContent = message;
+    formMessage.hidden = !message;
+    formMessage.classList.toggle('error', isError);
+    formMessage.classList.toggle('success', !isError && Boolean(message));
+  }
+
+  function toggleTerrainField() {
+    const showTerrain = typeBien.value === 'Maison';
+    terrainGroup.classList.toggle('hidden', !showTerrain);
+    terrainGroup.setAttribute('aria-hidden', String(!showTerrain));
+
+    if (!showTerrain) {
+      terrainInput.value = '';
+    }
+  }
+
+  function showResult(data, payload) {
+    resultPlaceholder.hidden = true;
+    resultCard.classList.remove('hidden');
+
+    document.getElementById('result-price').textContent = `${Number(data.prix_estime).toLocaleString('fr-FR')} €`;
+    document.getElementById('result-m2').textContent = `${Number(data.prix_m2).toLocaleString('fr-FR')} €/m²`;
+    document.getElementById('result-type').textContent = payload.type_bien;
+    document.getElementById('result-surface').textContent = `${Number(payload.surface).toLocaleString('fr-FR')} m²`;
+    document.getElementById('result-pieces').textContent = `${Number(payload.pieces).toLocaleString('fr-FR')}`;
+    document.getElementById('result-terrain').textContent = payload.type_bien === 'Maison' ? `${Number(payload.terrain || 0).toLocaleString('fr-FR')} m²` : 'N/A';
+    document.getElementById('result-departement').textContent = payload.departement;
+  }
+
+  typeBien.addEventListener('change', toggleTerrainField);
+  toggleTerrainField();
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setFormMessage('');
+
+    const payload = {
+      type_bien: typeBien.value,
+      surface: Number(document.getElementById('surface').value),
+      pieces: Number(document.getElementById('pieces').value),
+      terrain: Number(terrainInput.value || 0),
+      departement: Number(document.getElementById('departement').value),
+    };
+
+    if (!Number.isFinite(payload.surface) || payload.surface <= 0) {
+      setFormMessage('La surface doit être un nombre supérieur à 0 m².', true);
+      document.getElementById('surface').focus();
+      return;
+    }
+
+    if (!Number.isInteger(payload.pieces) || payload.pieces <= 0) {
+      setFormMessage('Le nombre de pièces doit être un nombre entier supérieur à 0.', true);
+      document.getElementById('pieces').focus();
+      return;
+    }
+
+    if (!payload.departement) {
+      setFormMessage('Merci de sélectionner un département.', true);
+      return;
+    }
+
+    if (payload.type_bien === 'Maison' && payload.terrain < 0) {
+      setFormMessage('La surface du terrain doit être supérieure ou égale à 0 m².', true);
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Calcul en cours…';
+
+    try {
+      const response = await fetch('/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error((data && data.error) || 'La demande d’estimation a échoué.');
+      }
+
+      if (!data || typeof data.prix_estime !== 'number' || typeof data.prix_m2 !== 'number') {
+        throw new Error('Le serveur n’a pas renvoyé de résultats exploitables.');
+      }
+
+      showResult(data, payload);
+      setFormMessage('Estimation mise à jour.', false);
+    } catch (error) {
+      setFormMessage(error.message || 'Une erreur est survenue pendant le calcul.', true);
+      resultPlaceholder.hidden = false;
+      resultCard.classList.add('hidden');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Estimer mon bien';
+    }
+  });
+</script>
+{% endblock %}

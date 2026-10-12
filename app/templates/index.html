@@ -1,0 +1,40 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Estimation immobilière en Île-de-France</p>
+    <h1>Estimez votre bien avec clarté.</h1>
+    <p class="lead">Obtenez une estimation indicative et transparente du prix de votre appartement ou de votre maison.</p>
+    <div class="cta-row">
+      <a class="button primary" href="{{ url_for('estimate') }}">Estimer mon bien</a>
+      <a class="button secondary" href="{{ url_for('about') }}">Comprendre l’estimation</a>
+    </div>
+  </div>
+
+  <aside class="hero-panel panel" aria-label="Informations clés">
+    <h2>Ce que l’on prend en compte</h2>
+    <ul class="check-list">
+      <li>Type de bien et surface habitable</li>
+      <li>Nombre de pièces et terrain (maison)</li>
+      <li>Département et zone géographique</li>
+      <li>Prix de référence de la zone</li>
+    </ul>
+  </aside>
+</section>
+
+<section class="features" aria-label="Avantages de l’estimateur">
+  <article class="feature-card panel">
+    <h3>Prix total</h3>
+    <p>Le résultat affiche le prix estimé total et le prix au m² calculés à partir des données saisies.</p>
+  </article>
+  <article class="feature-card panel">
+    <h3>Parcours simple</h3>
+    <p>Quelques informations suffisent pour obtenir une projection claire, sans complication inutile.</p>
+  </article>
+  <article class="feature-card panel">
+    <h3>Transparence</h3>
+    <p>Les montants affichés sont calculés à partir des informations que vous renseignez.</p>
+  </article>
+</section>
+{% endblock %}

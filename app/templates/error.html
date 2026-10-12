@@ -1,0 +1,10 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<section class="error-page panel" aria-live="assertive">
+  <p class="eyebrow">Erreur</p>
+  <h1>{{ code }} — {{ message }}</h1>
+  <p>Vous pouvez revenir à l’accueil ou utiliser la navigation du site.</p>
+  <a class="button primary" href="{{ url_for('home') }}">Retour à l’accueil</a>
+</section>
+{% endblock %}

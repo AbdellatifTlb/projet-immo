@@ -1,0 +1,33 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+  <p class="eyebrow">À propos</p>
+  <h1>Comprendre notre estimation</h1>
+</section>
+
+<div class="about-grid">
+  <article class="panel">
+    <h2>Ce que cette estimation représente</h2>
+    <p>Les montants affichés sont des estimations de marché issues d’un modèle interne. Ils servent à orienter la réflexion et ne remplacent pas une expertise immobilière professionnelle.</p>
+    <p>La méthode s’appuie sur des données utiles au calcul : type de bien, surface, nombre de pièces, terrain, département et références de prix locales.</p>
+  </article>
+
+  <article class="panel">
+    <h2>Informations prises en compte</h2>
+    <ul class="bullet-list">
+      <li>Type de bien : appartement ou maison</li>
+      <li>Surface habitable et nombre de pièces</li>
+      <li>Surface du terrain pour les maisons</li>
+      <li>Département de localisation</li>
+      <li>Prix de référence associé à la zone</li>
+    </ul>
+  </article>
+
+  <article class="panel wide-panel">
+    <h2>Limites et transparence</h2>
+    <p>L’estimation ne garantit pas la valeur exacte d’un bien, car elle ne prend pas en compte l’état général du logement, la qualité des équipements, la vue, la présence d’une terrasse, les travaux récents ni les spécificités locales précises.</p>
+    <p>Pour cette raison, l’objectif est d’offrir une aide de cadrage honnête et compréhensible, sans promesse de précision absolue.</p>
+  </article>
+</div>
+{% endblock %}

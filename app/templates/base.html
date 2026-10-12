@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Estimateur immobilier en France, avec des résultats transparents et accessibles.">
+    <title>{% block title %}ImmoVision{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Aller au contenu</a>
+
+    <header class="site-header">
+      <nav class="top-nav" aria-label="Navigation principale">
+        <a href="{{ url_for('home') }}" class="brand" aria-label="Accueil ImmoVision">
+          <span class="brand-mark" aria-hidden="true">🏠</span>
+          <span>ImmoVision</span>
+        </a>
+
+        <div class="nav-links">
+          <a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}" {% if request.endpoint == 'home' %}aria-current="page"{% endif %}>Accueil</a>
+          <a href="{{ url_for('estimate') }}" class="{% if request.endpoint == 'estimate' %}active{% endif %}" {% if request.endpoint == 'estimate' %}aria-current="page"{% endif %}>Estimation</a>
+          <a href="{{ url_for('about') }}" class="{% if request.endpoint == 'about' %}active{% endif %}" {% if request.endpoint == 'about' %}aria-current="page"{% endif %}>À propos</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
